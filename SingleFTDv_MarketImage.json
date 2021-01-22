@@ -90,7 +90,7 @@
         },
         "subnet2Address" : {
             "type" : "string",
-            "defaultValue": "10.1.1.10
+            "defaultValue": "10.1.1.10",
             "metadata" : {
                 "description" : "Subnet 2 IP Address"
             }
@@ -112,7 +112,7 @@
         },
         "subnet3Address" : {
             "type" : "string",
-            "defaultValue": "10.1.2.10
+            "defaultValue": "10.1.2.10",
             "metadata" : {
                 "description" : "Subnet 3 IP Address"
             }
@@ -134,7 +134,7 @@
         },
         "subnet4Address" : {
             "type" : "string",
-            "defaultValue": "10.1.3.10
+            "defaultValue": "10.1.3.10",
             "metadata" : {
                 "description" : "Subnet 4 IP Address"
             }
