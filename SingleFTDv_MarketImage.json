@@ -1,25 +1,12 @@
-
+{
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "location": {
-            "type": "string",
-            "metadata": {
-                "description": "Deployment location"
-            }
-        },
         "vmName": {
             "type": "string",
             "defaultValue": "ngfw-vm",
             "metadata": {
             "description": "Name of the NGFW Virtual Machine."
-         }
-        },
-        "virtualNetworkName": {
-            "type": "string",
-            "defaultValue": "FTDv_Network",
-            "metadata": {
-                "description": "Virtual Network name"
             }
         },
         "adminUsername": {
@@ -36,12 +23,26 @@
                 "description": "Password for the Virtual Machine."
             }
         },
-
+        "virtualNetworkNewOrExisting" : {
+            "type" : "string",
+            "defaultValue" : "existing",
+            "allowedValues": ["new", "existing"],
+            "metadata": {
+                "description": "Identifies whether to use new or existing Virtual Network"
+            }
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "defaultValue": "FTDv_Network",
+            "metadata": {
+                "description": "Virtual Network name"
+            }
+        },
         "virtualNetworkRG": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
-                "description": "Identifies the Resource Group of the Virtual Network"
+                "description": "Identifies the Resource Group of the Virtual Network(in case of existing vnet)"
             }
         },
         "virtualNetworkAddressPrefix": {
@@ -51,11 +52,11 @@
                 "description": "Virtual Network Address prefix"
             }
         },
-        "virtualNetworkNewOrExisting" : {
-            "type" : "string",
-            "defaultValue" : "",
+        "Subnet1Name": {
+            "type": "string",
+            "defaultValue": "",
             "metadata": {
-                "description": "Identifies whether to use new or existing Virtual Network"
+                "description": "Subnet 1 Name"
             }
         },
         "Subnet1Prefix": {
@@ -65,17 +66,18 @@
                 "description": "Subnet 1 Prefix"
             }
         },
-        "Subnet1Name": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Subnet 1 Name"
-            }
-        },
         "subnet1Address" : {
             "type" : "string",
             "metadata" : {
                 "description" : "Subnet 1 IP Address"
+            }
+        },
+
+        "Subnet2Name": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Subnet 2 Name"
             }
         },
         "Subnet2Prefix": {
@@ -85,17 +87,18 @@
                 "description": "Subnet 2 Prefix"
             }
         },
-        "Subnet2Name": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Subnet 2 Name"
-            }
-        },
         "subnet2Address" : {
             "type" : "string",
             "metadata" : {
                 "description" : "Subnet 2 IP Address"
+            }
+        },
+
+        "Subnet3Name": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Subnet 3 Name"
             }
         },
         "Subnet3Prefix": {
@@ -105,17 +108,18 @@
                 "description": "Subnet 3 Prefix"
             }
         },
-        "Subnet3Name": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Subnet 3 Name"
-            }
-        },
         "subnet3Address" : {
             "type" : "string",
             "metadata" : {
                 "description" : "Subnet 3 IP Address"
+            }
+        },
+
+        "Subnet4Name": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Subnet 4 Name"
             }
         },
         "Subnet4Prefix": {
@@ -125,30 +129,24 @@
                 "description": "Subnet 4 Prefix"
             }
         },
-        "Subnet4Name": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Subnet 4 Name"
-            }
-        },
         "subnet4Address" : {
             "type" : "string",
             "metadata" : {
                 "description" : "Subnet 4 IP Address"
             }
         },
+
         "billingType": {
             "type": "string",
             "defaultValue": "ftdv-azure-byol",
             "allowedValues": [
                 "ftdv-azure-byol"
             ],
-
             "metadata": {
                 "description": "Billing type to use."
             }
         },
+
         "softwareVersionByol": {
             "type": "string",
             "defaultValue": "67065.0.0",
@@ -162,22 +160,12 @@
                 "description": "Software version to use."
             }
         },
-        "availabilityOption": {
-            "type": "string",
-            "defaultValue": "none",
-            "allowedValues": [
-                "none",
-                "availabilityZone"
-            ],
-            "metadata": {
-                "description": "Availability option."
-            }
-        },
         "availabilityZone": {
             "type": "int",
             "defaultValue": 0,
             "minValue": 0,
             "maxValue": 3,
+            "allowedValues": [0, 1, 2, 3],
             "metadata": {
                 "description": "Zone number. Set to 0 if you do not want to use Availability Zones"
             }
@@ -234,22 +222,6 @@
                 "description": "Enter the NAT ID to be used during registration (optional)"
             }
         },
-        "storageAccountName": {
-            "type": "string",
-            "metadata": {
-                "description": "Unique Name for Storage Account where the Virtual Machine's disks will be placed."
-            }
-        },
-        "storageAccountType": {
-            "type": "string",
-            "defaultValue": "Standard_LRS",
-            "allowedValues": [
-                "Standard_LRS"
-            ],
-            "metadata": {
-                "description": "The type of storage account created."
-            }
-        },
         "storageAccountNewOrExisting": {
             "type": "string",
             "defaultValue": "new",
@@ -266,6 +238,22 @@
             "defaultValue": "",
             "metadata": {
                 "description": "Resource Group containing existing storage account"
+            }
+        },
+        "storageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Unique Name for Storage Account where the Virtual Machine's disks will be placed. Must be 3 to 24 chars long and only lowercase letters & numbers are allowed."
+            }
+        },
+        "storageAccountType": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS"
+            ],
+            "metadata": {
+                "description": "The type of storage account created."
             }
         },
         "vmSize" : {
@@ -285,7 +273,7 @@
     "variables": {
         "imagePublisher": "cisco",
         "imageOffer": "cisco-ftdv",
-        "selectedZone":"[if(equals(parameters('availabilityOption'), 'none'), json('null'), array(parameters('availabilityZone')))]",
+        "selectedZone":"[if(equals(parameters('availabilityZone'), 0), json('null'), array(parameters('availabilityZone')))]",
         "imageSKU": "[parameters('billingType')]",
         "subnet1Ref": "[resourceId(parameters('virtualNetworkRG'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('subnet1Name'))]",
         "subnet2Ref": "[resourceId(parameters('virtualNetworkRG'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('subnet2Name'))]",
@@ -303,7 +291,7 @@
         "dataNsgName": "[concat(parameters('vmName'),'-Data-Net-SecurityGroup')]",
         "hostname": "[tolower(parameters('vmName'))]",
         "swVersionEffective": "[parameters('softwareVersionByol')]",
-        "prefixSwVerEffective": "[if(equals(parameters('billingType'), 'ftdv-azure-byol'), substring(parameters('softwareVersionByol'),0,2), substring(parameters('softwareVersionPayg'),0,2))]",
+        "prefixSwVerEffective": "[if(equals(parameters('billingType'), 'ftdv-azure-byol'), substring(parameters('softwareVersionByol'),0,2), substring(parameters('softwareVersionByol'),0,2))]",
         "enableAccelNet": "[if(contains('62-63-64-65-66', variables('prefixSwVerEffective')), bool('false'), bool('true'))]",
         "commonCustomData": "[concat('\"AdminPassword\":\"', parameters('ftdAdminPassword'), '\",\"Hostname\":\"', variables('hostname'),'\"')]",
         "fmcRegCustomData": "[concat('\"FmcIp\":\"', parameters('fmcIp'), '\",\"FmcRegKey\":\"', parameters('fmcRegKey'),'\",\"FmcNatId\":\"', parameters('fmcNatId'),'\"')]",
@@ -342,7 +330,7 @@
                 "name": "[parameters('storageAccountType')]"
             },
             "kind": "Storage",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "properties": {
             }
         },
@@ -350,7 +338,7 @@
             "apiVersion": "2020-04-01",
             "type": "Microsoft.Network/networkSecurityGroups",
             "name": "[variables('mgtNsgName')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "properties": {
                 "securityRules": [
                     {
@@ -388,7 +376,7 @@
             "apiVersion": "2020-04-01",
             "type": "Microsoft.Network/networkSecurityGroups",
             "name": "[variables('dataNsgName')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "properties": {
                 "securityRules": [
                     {
@@ -427,21 +415,45 @@
             "condition": "[equals(parameters('virtualNetworkNewOrExisting'),'new')]",
             "name": "[concat(parameters('Subnet1Name'),'-FTDv-RouteTable')]",
             "apiVersion": "2020-04-01",
-            "location": "[parameters('location')]"
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "Route-Subnet2-To-FTDv",
+                        "properties": {
+                            "addressPrefix": "[parameters('Subnet2Prefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('subnet1Address')]"
+                        }
+                    }
+                ]
+            }
         },
         {
             "type": "Microsoft.Network/routeTables",
             "condition": "[equals(parameters('virtualNetworkNewOrExisting'),'new')]",
             "name": "[concat(parameters('Subnet2Name'),'-FTDv-RouteTable')]",
             "apiVersion": "2020-04-01",
-            "location": "[parameters('location')]"
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "routes": [
+                    {
+                        "name": "Route-Subnet1-To-FTDv",
+                        "properties": {
+                            "addressPrefix": "[parameters('Subnet1Prefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[parameters('subnet2Address')]"
+                        }
+                    }
+                ]
+            }
         },
         {
             "type": "Microsoft.Network/routeTables",
             "condition": "[equals(parameters('virtualNetworkNewOrExisting'),'new')]",
             "name": "[concat(parameters('Subnet3Name'),'-FTDv-RouteTable')]",
             "apiVersion": "2020-04-01",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "properties": {
                 "routes": [
                 {
@@ -460,7 +472,7 @@
             "condition": "[equals(parameters('virtualNetworkNewOrExisting'),'new')]",
             "name": "[concat(parameters('Subnet4Name'),'-FTDv-RouteTable')]",
             "apiVersion": "2020-04-01",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "properties": {
                 "routes": [
                 {
@@ -479,7 +491,7 @@
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2020-04-01",
             "condition": "[equals(parameters('virtualNetworkNewOrExisting'),'new')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "dependsOn" : [
                 "[concat('Microsoft.Network/routeTables/', variables('routeTable1Name'))]",
                 "[concat('Microsoft.Network/routeTables/', variables('routeTable2Name'))]",
@@ -536,7 +548,7 @@
             "apiVersion": "2020-04-01",
             "type": "Microsoft.Network/networkInterfaces",
             "name": "[concat(parameters('vmName'),'-Nic0')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
                 "[concat('Microsoft.Network/networkSecurityGroups/',variables('mgtNsgName'))]"
@@ -565,7 +577,7 @@
             "apiVersion": "2020-04-01",
             "type": "Microsoft.Network/networkInterfaces",
             "name": "[concat(parameters('vmName'),'-Nic1')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
             ],
@@ -577,7 +589,8 @@
                             "privateIPAllocationMethod": "Static",
                             "privateIPAddress" : "[parameters('subnet2Address')]",
                             "subnet": {
-                                "id": "[variables('subnet2Ref')]"                            }
+                                "id": "[variables('subnet2Ref')]"
+                            }
                         }
                     }
                 ],
@@ -589,7 +602,7 @@
             "apiVersion": "2020-04-01",
             "type": "Microsoft.Network/networkInterfaces",
             "name": "[concat(parameters('vmName'),'-Nic2')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
                 "[concat('Microsoft.Network/networkSecurityGroups/',variables('dataNsgName'))]"
@@ -602,7 +615,8 @@
                             "privateIPAllocationMethod": "Static",
                             "privateIPAddress" : "[parameters('subnet3Address')]",
                             "subnet": {
-                                "id": "[variables('subnet3Ref')]"                            }
+                                "id": "[variables('subnet3Ref')]"
+                            }
                         }
                     }
                 ],
@@ -617,7 +631,7 @@
             "apiVersion": "2020-04-01",
             "type": "Microsoft.Network/networkInterfaces",
             "name": "[concat(parameters('vmName'),'-Nic3')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
                 "[concat('Microsoft.Network/networkSecurityGroups/',variables('dataNsgName'))]"
@@ -628,9 +642,10 @@
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAllocationMethod": "Static",
-                            "privateIPAddress" : "[parameters('subnet4StartAddress')]",
+                            "privateIPAddress" : "[parameters('subnet4Address')]",
                             "subnet": {
-                                "id": "[variables('subnet4Ref')]"                            }
+                                "id": "[variables('subnet4Ref')]"
+                            }
                         }
                     }
                 ],
@@ -642,10 +657,10 @@
             }
         },
         {
-            "apiVersion": "2019-12-01",
+            "apiVersion": "2019-07-01",
             "type": "Microsoft.Compute/virtualMachines",
             "name": "[parameters('vmName')]",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "plan": {
                 "name": "[variables('imageSKU')]",
                 "publisher": "[variables('imagePublisher')]",
